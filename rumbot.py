@@ -21,6 +21,7 @@ def create_gui():
     app = tk.Tk()
     app.title("Rumbot - Rumble Viewbot tool")
     app.configure(bg="#161618")
+    app.resizable(False, False)
 
     channel_id_label = tk.Label(app, text="Video ID:", fg="white", bg="#161618")
     channel_id_label.grid(row=0, column=0, padx=10, pady=5)
