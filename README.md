@@ -14,6 +14,8 @@ pip install -r requirements.txt
 
 ```sh
 python3 rumbot.py
+# or you can run the cli version
+python3 rumbot-cli.py <video id> <bots number>
 ```
 
 ## How to find the video_id
@@ -32,8 +34,7 @@ to fetch video id using the channel name so you will have to do it this way:
 ## Preview 🧙‍♂️
 
 ![Preview](https://raw.githubusercontent.com/Ryukudz/Rumble-Viewer-Bot/main/preview.gif)
+
 Video Presentation: https://www.youtube.com/watch?v=OKN9bqSGYac
 
-# License
 
-`rumbot` is made with by [Ryuku](https://github.com/Ryukudz/).
