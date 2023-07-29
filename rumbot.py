@@ -33,10 +33,6 @@ def create_gui():
     num_viewers_entry = tk.Entry(app, width=20)
     num_viewers_entry.grid(row=1, column=1, padx=10, pady=5)
 
-    question_label = tk.Label(app, text="?", fg="white", bg="#0078d4", cursor="hand2")
-    question_label.grid(row=0, column=0, padx=0, pady=0, sticky="e")
-    question_label.bind("<Button-1>", lambda e: on_help_click())
-
     status_label = tk.Label(app, text="", fg="green", bg="#161618")
     status_label.grid(row=3, column=0, columnspan=2, padx=10, pady=5)
 
@@ -52,11 +48,10 @@ def create_gui():
     footer_label = tk.Label(app, text="© - Ryuku", fg="white", bg="#161618", cursor="hand2")
     footer_label.grid(row=5, column=1, pady=5, padx=10, sticky="e")
     footer_label.bind("<Button-1>", lambda e: on_footer_click())
+    footer_font = ("Arial", 9, "italic")
+    footer_label.config(font=footer_font)
 
     app.mainloop()
-
-def on_help_click():
-    webbrowser.open("https://raw.githubusercontent.com/Ryukudz/Rumble-Viewer-Bot/main/tab.png")
 
 def on_footer_click():
     webbrowser.open("https://ryukudz.com")
@@ -129,3 +124,4 @@ def on_stop_clicked():
 
 if __name__ == "__main__":
     create_gui()
+
