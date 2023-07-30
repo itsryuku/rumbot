@@ -23,39 +23,34 @@ def create_gui():
     app.configure(bg="#161618")
     app.resizable(False, False)
 
-    channel_id_label = tk.Label(app, text="Video ID:", fg="white", bg="#161618")
+    channel_id_label = tk.Label(app, text="Video ID:", fg="white", bg="#161618", font=("Georgia", 10))
     channel_id_label.grid(row=0, column=0, padx=10, pady=5)
-    channel_id_entry = tk.Entry(app, width=20)
+    channel_id_entry = tk.Entry(app, width=20, bg="#2c2c2e", fg="white", borderwidth=2,
+                                relief=tk.FLAT, highlightthickness=1, highlightbackground="#000000",
+                                highlightcolor="#000000", bd=1, insertbackground="white", font = ("Roboto", 9, "italic"))
     channel_id_entry.grid(row=0, column=1, padx=10, pady=5)
 
-    num_viewers_label = tk.Label(app, text="Number of Viewers:", fg="white", bg="#161618")
+    num_viewers_label = tk.Label(app, text="Number of Bots:", fg="white", bg="#161618", font=("Georgia", 10))
     num_viewers_label.grid(row=1, column=0, padx=10, pady=5)
-    num_viewers_entry = tk.Entry(app, width=20)
+    num_viewers_entry = tk.Entry(app, width=20, bg="#2c2c2e", fg="white", borderwidth=2,
+                                 relief=tk.FLAT, highlightbackground="#000000",
+                                 highlightcolor="#000000", highlightthickness=1, bd=1, insertbackground="white", font=("Roboto", 9, "italic"))
     num_viewers_entry.grid(row=1, column=1, padx=10, pady=5)
 
-    status_label = tk.Label(app, text="", fg="green", bg="#161618")
+    status_label = tk.Label(app, text="", fg="green", bg="#161618", font = ("Poppins", 10))
     status_label.grid(row=3, column=0, columnspan=2, padx=10, pady=5)
 
-    send_button = tk.Button(app, text="Send", width=12, command=on_send_clicked, bg="#0078d4", fg="white", borderwidth=0)
-    send_button.grid(row=4, column=0, padx=10, pady=5)
+    send_button = tk.Button(app, text="Send", width=9, command=on_send_clicked,font = ("Verdana", 10, "bold"), bg="#0078d4", fg="white", borderwidth=0, highlightbackground="#000000")
+    send_button.grid(row=4, column=0, padx=5, pady=5)
 
-    stop_button = tk.Button(app, text="Stop", width=12, command=on_stop_clicked, bg="#e81123", fg="white", borderwidth=0)
-    stop_button.grid(row=4, column=1, padx=10, pady=5)
+    stop_button = tk.Button(app, text="Stop", width=9, font=("Verdana", 10, "bold"), command=on_stop_clicked, bg="#e81123", fg="white", borderwidth=0, highlightbackground="#000000")
+    stop_button.grid(row=4, column=1, padx=5, pady=5)
 
-    button_font = ("Arial", 12, "bold")
-    send_button.config(font=button_font)
-    stop_button.config(font=button_font)
-    footer_label = tk.Label(app, text="© - Ryuku", fg="white", bg="#161618", cursor="hand2")
+    footer_label = tk.Label(app, text="© - Ryuku", fg="white", bg="#161618", cursor="hand2", font=("Helvetica", 8, "italic bold"))
     footer_label.grid(row=5, column=1, pady=5, padx=10, sticky="e")
-    footer_label.bind("<Button-1>", lambda e: on_footer_click())
-    footer_font = ("Arial", 9, "italic")
-    footer_label.config(font=footer_font)
-
+    footer_label.bind("<Button-1>", lambda e: webbrowser.open("https://ryukudz.com"))    
     app.mainloop()
-
-def on_footer_click():
-    webbrowser.open("https://ryukudz.com")
-
+    
 def generate_viewer_id():
     characters = string.ascii_lowercase + string.digits
     return ''.join(random.choice(characters) for _ in range(8))
@@ -113,7 +108,7 @@ def on_send_clicked():
 def on_stop_clicked():
     global are_we_botting
     if are_we_botting:
-      status_label.config(text="Stopping...", fg="red")
+      status_label.config(text="Stopped...", fg="red")
       send_button.config(state=tk.NORMAL)
       channel_id_entry.config(state=tk.NORMAL)
       num_viewers_entry.config(state=tk.NORMAL)
@@ -124,4 +119,3 @@ def on_stop_clicked():
 
 if __name__ == "__main__":
     create_gui()
-
