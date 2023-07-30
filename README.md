@@ -29,11 +29,11 @@ to fetch video id using the channel name so you will have to do it this way:
 - Click on the network tab and look for the GET request to wn0.rumble.com
 ```
 
-![TUTO](https://raw.githubusercontent.com/Ryukudz/rumbot/main/help.png)
+![TUTO](https://raw.githubusercontent.com/Ryukudz/rumbot/main/img/help.png)
 
-## Preview 🧙‍♂️
+## Preview
 
-![Preview](https://raw.githubusercontent.com/Ryukudz/rumbot/main/preview.gif)
+![Preview](https://raw.githubusercontent.com/Ryukudz/rumbot/main/img/preview.gif)
 
 Video Presentation: https://www.youtube.com/watch?v=qwXVKIH9kCA
 
