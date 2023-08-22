@@ -128,4 +128,4 @@ if __name__ == "__main__":
     app = QApplication([])
     mainWin = RumbotApp()
     mainWin.show()
-    app.exec()u
+    app.exec()
