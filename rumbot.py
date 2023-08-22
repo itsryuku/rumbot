@@ -6,116 +6,126 @@ import httpx
 import random
 import string
 import asyncio
-import webbrowser
-import tkinter as tk
+from PySide6.QtWidgets import (
+    QApplication, QMainWindow, QLabel, QLineEdit,
+    QPushButton, QVBoxLayout, QHBoxLayout, QFormLayout, QFrame
+)
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QIcon
+from stylesheet import Stylesheets
 
-channel_id_entry = None
-num_viewers_entry = None
-status_label = None
-send_button = None
-stop_button = None
 are_we_botting = False
+class RumbotApp(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
 
-def create_gui():
-    global channel_id_entry, num_viewers_entry, status_label, send_button, stop_button
-    app = tk.Tk()
-    app.title("Rumbot - Rumble Viewbot tool")
-    app.configure(bg="#161618")
-    app.resizable(False, False)
+    def initUI(self):
+        self.setWindowTitle("Rumbot")
+        self.setFixedSize(300, 150)
+        self.setWindowFlags(Qt.WindowMinimizeButtonHint | Qt.WindowCloseButtonHint)
+        app_icon = QIcon("./img/sigma.jpg")
+        self.setWindowIcon(app_icon)
 
-    channel_id_label = tk.Label(app, text="Video ID:", fg="white", bg="#161618", font=("Georgia", 10))
-    channel_id_label.grid(row=0, column=0, padx=10, pady=5)
-    channel_id_entry = tk.Entry(app, width=20, bg="#2c2c2e", fg="white", borderwidth=2,
-                                relief=tk.FLAT, highlightthickness=1, highlightbackground="#000000",
-                                highlightcolor="#000000", bd=1, insertbackground="white", font = ("Roboto", 9, "italic"))
-    channel_id_entry.grid(row=0, column=1, padx=10, pady=5)
+        container_frame = QFrame(self)
+        container_frame.setStyleSheet("background-color: #1A1A1A; border-radius: 10px; padding: 3px;")
+        self.setCentralWidget(container_frame)
 
-    num_viewers_label = tk.Label(app, text="Number of Bots:", fg="white", bg="#161618", font=("Georgia", 10))
-    num_viewers_label.grid(row=1, column=0, padx=10, pady=5)
-    num_viewers_entry = tk.Entry(app, width=20, bg="#2c2c2e", fg="white", borderwidth=2,
-                                 relief=tk.FLAT, highlightbackground="#000000",
-                                 highlightcolor="#000000", highlightthickness=1, bd=1, insertbackground="white", font=("Roboto", 9, "italic"))
-    num_viewers_entry.grid(row=1, column=1, padx=10, pady=5)
+        layout = QVBoxLayout(container_frame)
 
-    status_label = tk.Label(app, text="", fg="green", bg="#161618", font = ("Poppins", 10))
-    status_label.grid(row=3, column=0, columnspan=2, padx=10, pady=5)
+        form_layout = QFormLayout()
+        input_style = Stylesheets.input_style()
+        label_style = Stylesheets.label_style()
+        noti_style = Stylesheets.noti_style()
 
-    send_button = tk.Button(app, text="Send", width=9, command=on_send_clicked,font = ("Verdana", 10, "bold"), bg="#0078d4", fg="white", borderwidth=0, highlightbackground="#000000")
-    send_button.grid(row=4, column=0, padx=5, pady=5)
+        self.channel_id_label = QLabel("Video ID:")
+        self.channel_id_label.setStyleSheet(label_style)
+        self.channel_id_entry = QLineEdit()
+        self.channel_id_entry.setStyleSheet(input_style)
+        form_layout.addRow(self.channel_id_label, self.channel_id_entry)
 
-    stop_button = tk.Button(app, text="Stop", width=9, font=("Verdana", 10, "bold"), command=on_stop_clicked, bg="#e81123", fg="white", borderwidth=0, highlightbackground="#000000")
-    stop_button.grid(row=4, column=1, padx=5, pady=5)
+        self.num_viewers_label = QLabel("Number of Bots:")
+        self.num_viewers_label.setStyleSheet(label_style)
+        self.num_viewers_entry = QLineEdit()
+        self.num_viewers_entry.setStyleSheet(input_style)
+        form_layout.addRow(self.num_viewers_label, self.num_viewers_entry)
 
-    footer_label = tk.Label(app, text="© - Ryuku", fg="white", bg="#161618", cursor="hand2", font=("Helvetica", 8, "italic bold"))
-    footer_label.grid(row=5, column=1, pady=5, padx=10, sticky="e")
-    footer_label.bind("<Button-1>", lambda e: webbrowser.open("https://ryukudz.com"))    
-    app.mainloop()
-    
-def generate_viewer_id():
-    characters = string.ascii_lowercase + string.digits
-    return ''.join(random.choice(characters) for _ in range(8))
+        layout.addLayout(form_layout)
 
+        self.status_label = QLabel("")
+        self.status_label.setStyleSheet(noti_style)
+        layout.addWidget(self.status_label)
 
-async def start_viewbotting(session, channel_id, num_viewers):
-    url = f"https://wn0.rumble.com/service.php?video_id={channel_id}&name=video.watching-now"
-    response = await session.get(url)
-    if "data" not in response.json():
-        status_label.config(text="Channel doesn't exist.", fg="red")
-        return False
+        button_layout = QHBoxLayout()
+        self.send_button = QPushButton("Send")
+        self.send_button.setStyleSheet(Stylesheets.button_style())
+        self.send_button.clicked.connect(self.on_send_clicked)
+        self.stop_button = QPushButton("Stop")
+        self.stop_button.clicked.connect(self.on_stop_clicked)
+        self.stop_button.setStyleSheet(Stylesheets.button_style())
+        button_layout.addWidget(self.send_button)
+        button_layout.addWidget(self.stop_button)
+        layout.addLayout(button_layout)
 
+    def on_send_clicked(self):
+        global are_we_botting
+        channel_id = self.channel_id_entry.text()
+        num_viewers = self.num_viewers_entry.text()
 
-    url = "https://wn0.rumble.com/service.php?name=video.watching-now"
-    tasks = []
-    for _ in range(num_viewers):
-        viewer_id = generate_viewer_id()
-        data = {"video_id": channel_id, "viewer_id": viewer_id}
-        task = session.post(url, data=data)
-        tasks.append(task)
+        if not channel_id or not num_viewers:
+            self.show_status_message("Please enter both fields.", "red")
+            return
 
-    await asyncio.gather(*tasks)
-    channel_id_entry.config(state=tk.DISABLED)
-    num_viewers_entry.config(state=tk.DISABLED)
-    send_button.config(state=tk.DISABLED)
+        num_viewers = int(num_viewers)
+        self.show_status_message("Viewers sent...", "green")
+        session = httpx.AsyncClient()
+        asyncio.run(self.start_viewbotting(session, channel_id, num_viewers))
+        are_we_botting = True
 
-    return True
-
-
-async def keep_viewbotting(session, channel_id, num_viewers, interval_seconds=80):
-    while True:
-        if await start_viewbotting(session, channel_id, num_viewers):
-            await asyncio.sleep(interval_seconds)
+    def on_stop_clicked(self):
+        global are_we_botting
+        if are_we_botting:
+            self.show_status_message("Stopped...", "red")
+            self.enable_ui_elements(True)
+            are_we_botting = False
         else:
-            break
-        await session.aclose()
+            self.show_status_message("Nothing to stop...", "red")
 
+    async def start_viewbotting(self, session, channel_id, num_viewers):
+        url = f"https://wn0.rumble.com/service.php?video_id={channel_id}&name=video.watching-now"
+        response = await session.get(url)
+        if "data" not in response.json():
+            self.show_status_message("Channel doesn't exist.", "red")
+            return False
 
-def on_send_clicked():
-    global are_we_botting
-    channel_id = channel_id_entry.get()
-    num_viewers = num_viewers_entry.get()
+        url = "https://wn0.rumble.com/service.php?name=video.watching-now"
+        tasks = []
+        for _ in range(num_viewers):
+            viewer_id = self.generate_viewer_id()
+            data = {"video_id": channel_id, "viewer_id": viewer_id}
+            task = session.post(url, data=data)
+            tasks.append(task)
 
-    if not channel_id or not num_viewers:
-        status_label.config(text="Please enter both fields.", fg="red")
-        return
+        await asyncio.gather(*tasks)
+        self.enable_ui_elements(False)
 
-    num_viewers = int(num_viewers)
-    status_label.config(text="Viewers sent...", fg="green")
-    session = httpx.AsyncClient()
-    asyncio.run(start_viewbotting(session, channel_id, num_viewers))
-    are_we_botting = True
+        return Tre
 
+    def generate_viewer_id(self):
+        characters = string.ascii_lowercase + string.digits
+        return ''.join(random.choice(characters) for _ in range(8))
 
-def on_stop_clicked():
-    global are_we_botting
-    if are_we_botting:
-      status_label.config(text="Stopped...", fg="red")
-      send_button.config(state=tk.NORMAL)
-      channel_id_entry.config(state=tk.NORMAL)
-      num_viewers_entry.config(state=tk.NORMAL)
-      are_we_botting = False
-    else:
-      status_label.config(text="Nothing to stop...", fg="red")
+    def show_status_message(self, message, color):
+        self.status_label.setText(message)
+        self.status_label.setStyleSheet(f"color: {color}; font-family: Lato; font-size: 13px; font-style: italic;")
 
+    def enable_ui_elements(self, enable):
+        self.channel_id_entry.setDisabled(not enable)
+        self.num_viewers_entry.setDisabled(not enable)
+        self.send_button.setDisabled(not enable)
 
 if __name__ == "__main__":
-    create_gui()
+    app = QApplication([])
+    mainWin = RumbotApp()
+    mainWin.show()
+    app.exec()u
