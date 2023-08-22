@@ -109,7 +109,7 @@ class RumbotApp(QMainWindow):
         await asyncio.gather(*tasks)
         self.enable_ui_elements(False)
 
-        return Tre
+        return True
 
     def generate_viewer_id(self):
         characters = string.ascii_lowercase + string.digits
