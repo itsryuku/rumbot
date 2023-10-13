@@ -9,7 +9,6 @@ import httpx
 import random
 import string
 import asyncio
-import signal
 
 def generate_viewer_id():
     characters = string.ascii_lowercase + string.digits
@@ -35,11 +34,14 @@ async def start_viewbotting(session, channel_id, num_viewers):
     return True
 
 async def keep_viewbotting(session, channel_id, num_viewers, interval_seconds=80):
-    while True:
-        if await start_viewbotting(session, channel_id, num_viewers):
-            await asyncio.sleep(interval_seconds)
-        else:
-            break
+    try:
+        while True:
+            if await start_viewbotting(session, channel_id, num_viewers):
+                await asyncio.sleep(interval_seconds)
+            else:
+                break
+    except KeyboardInterrupt:
+        print("Ctrl + C Pressed. Stopping the viewbotting...")
 
 async def main():
     parser = argparse.ArgumentParser(description="Rumble video Viewbot CLI Tool")
@@ -47,12 +49,8 @@ async def main():
     parser.add_argument("num_viewers", type=int, help="Number of viewers to send")
     args = parser.parse_args()
 
-    signal.signal(signal.SIGINT, signal.SIG_DFL)
     async with httpx.AsyncClient() as session:
-        try:
-            await keep_viewbotting(session, args.video_id, args.num_viewers)
-        except KeyboardInterrupt:
-            print("Ctrl + C Pressed. Stopping the viewbotting...")
+        await keep_viewbotting(session, args.video_id, args.num_viewers)
 
 if __name__ == "__main__":
     asyncio.run(main())
